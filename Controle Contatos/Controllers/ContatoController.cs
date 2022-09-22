@@ -1,4 +1,5 @@
 ﻿using Controle_Contatos.Filters;
+using Controle_Contatos.Helper;
 using Controle_Contatos.Models;
 using Controle_Contatos.Repositorio;
 using Microsoft.AspNetCore.Mvc;
@@ -14,15 +15,19 @@ namespace Controle_Contatos.Controllers
     {
         // Banco de dados
         private readonly IContatoRepositorio _ContatoRepositorio;
+        private readonly ISessao _sessao;
 
-        public ContatoController(IContatoRepositorio contatoRepositorio) 
+        public ContatoController(IContatoRepositorio contatoRepositorio,
+                                  ISessao sessao ) 
         {
             _ContatoRepositorio = contatoRepositorio;
+            _sessao = sessao;
         }
 
         public IActionResult Index()
         {
-            List<ContatoModel> contatos = _ContatoRepositorio.BuscarTodos();
+            UsuarioModel usuarioLogado = _sessao.BuscarSessaoDoUsuario();
+            List<ContatoModel> contatos = _ContatoRepositorio.BuscarTodos(usuarioLogado.Id);
 
             return View(contatos);
         }
@@ -77,6 +82,9 @@ namespace Controle_Contatos.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    UsuarioModel usuarioLogado = _sessao.BuscarSessaoDoUsuario();
+                    contato.UsuarioId = usuarioLogado.Id;
+
                     _ContatoRepositorio.Adicionar(contato);
                     TempData["MensagemSucesso"] = "Contato cadastrado com sucesso!";
                     return RedirectToAction("Index");
@@ -97,6 +105,9 @@ namespace Controle_Contatos.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    UsuarioModel usuarioLogado = _sessao.BuscarSessaoDoUsuario();
+                    contato.UsuarioId = usuarioLogado.Id;
+
                     _ContatoRepositorio.Atualizar(contato);
                     TempData["MensagemSucesso"] = "Contato alterado com sucesso";
                     return RedirectToAction("Index");

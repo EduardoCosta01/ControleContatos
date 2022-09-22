@@ -35,6 +35,8 @@ namespace Controle_Contatos.Models
 
         public DateTime? DataAtualizacao { get; set; }
 
+        public virtual List<ContatoModel> Contatos { get; set; }
+
 
         [Required(ErrorMessage = "Informe o perfil do usuário")]
         public PerfilEnum? Perfil { get; set; }
@@ -60,6 +62,7 @@ namespace Controle_Contatos.Models
             Senha = novaSenha.GerarHosh();
             return novaSenha;
         }
+
 
     }
 }
